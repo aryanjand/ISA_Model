@@ -24,19 +24,25 @@ const server = http.createServer((req, res) => {
 
         req.on('end', async () => {
             try {
-                const data = JSON.parse(body);
-                // Make sure 'data.text' is defined before using it
-                if (data && data.text) {
+
+                const { text } = JSON.parse(body);
+
+                // Make sure 'text' is defined before using it
+                if (text) {
+
                     const pipeline = await MyPipeline.getInstance();
-                    const response = await pipeline(data.text);
+                    const response = await pipeline(text);
+                    
                     res.statusCode = 200;
                     res.setHeader('Content-Type', 'application/json');
                     res.end(JSON.stringify(response));
+                    
                 } else {
                     res.statusCode = 400; // Bad Request
                     res.end('Invalid request data');
                 }
             } catch (error) {
+                console.error('Error processing request:', error); // Log the error
                 res.statusCode = 500;
                 res.end('Internal Server Error');
             }
@@ -48,7 +54,8 @@ const server = http.createServer((req, res) => {
 });
 
 
-const PORT = process.env.PORT || 3000;
+
+const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
