@@ -17,6 +17,7 @@ class MyPipeline {
 const server = http.createServer((req, res) => {
     if (req.method === 'POST') {
         let body = '';
+
         req.on('data', chunk => {
             body += chunk.toString();
         });
@@ -24,11 +25,17 @@ const server = http.createServer((req, res) => {
         req.on('end', async () => {
             try {
                 const data = JSON.parse(body);
-                const pipeline = await MyPipeline.getInstance();
-                const response = await pipeline(data.text);
-                res.statusCode = 200;
-                res.setHeader('Content-Type', 'application/json');
-                res.end(JSON.stringify(response));
+                // Make sure 'data.text' is defined before using it
+                if (data && data.text) {
+                    const pipeline = await MyPipeline.getInstance();
+                    const response = await pipeline(data.text);
+                    res.statusCode = 200;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.end(JSON.stringify(response));
+                } else {
+                    res.statusCode = 400; // Bad Request
+                    res.end('Invalid request data');
+                }
             } catch (error) {
                 res.statusCode = 500;
                 res.end('Internal Server Error');
@@ -39,6 +46,7 @@ const server = http.createServer((req, res) => {
         res.end('Not Found');
     }
 });
+
 
 const PORT = process.env.PORT || 3000;
 
