@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@xenova/transformers": "^2.8.0"
+  },
+  "engines": {
+    "node": "21.2.0"
   }
 }
